@@ -3,7 +3,7 @@ from collections import OrderedDict
 import numpy as np
 
 
-class CentroidTracker():
+class CentroidTracker:
     def __init__(self, maxDisappeared=50):
         # initialize the next unique object ID along with two ordered
         # dictionaries used to keep track of mapping a given object
@@ -54,7 +54,7 @@ class CentroidTracker():
         inputCentroids = np.zeros((len(rects), 2), dtype="int")
 
         # loop over the bounding box rectangles
-        for (i, (startX, startY, endX, endY)) in enumerate(rects):
+        for i, (startX, startY, endX, endY) in enumerate(rects):
             # use the bounding box coordinates to derive the centroid
             cX = int((startX + endX) / 2.0)
             cY = int((startY + endY) / 2.0)
@@ -100,7 +100,7 @@ class CentroidTracker():
 
             # loop over the combination of the (row, column) index
             # tuples
-            for (row, col) in zip(rows, cols):
+            for row, col in zip(rows, cols):
                 # if we have already examined either the row or
                 # column value before, ignore it
                 # val
