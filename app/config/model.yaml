@@ -1,3 +1,0 @@
-model_container: 1_yolov5_ppe
-model_id: '2'
-port: '7000'
