@@ -125,7 +125,7 @@ def detection(data:Image_Model):
     print(type(res))
     return {"data":res}
 @app.get("/classes")
-def detection():
+def get_classes():
     res=im.getClasses()
     return {"data":res}
         
