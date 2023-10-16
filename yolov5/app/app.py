@@ -1,17 +1,20 @@
-from src.inference import InferenceModel
-from sftpdownload.download import SFTPClient
-from config_parser.parser import ParseConfig
-from zipfile import ZipFile
-import cv2
+""" yolov5"""
 import subprocess
-import requests
 import time
 import os
 import socket
-from fastapi import FastAPI
-import uvicorn
 import base64
 import numpy as np
+from zipfile import ZipFile
+
+import cv2
+import requests
+from fastapi import FastAPI
+import uvicorn
+
+from src.inference import InferenceModel
+from sftpdownload.download import SFTPClient
+from config_parser.parser import ParseConfig
 from querymodel.imageModel import Image_Model
 app = FastAPI()
 def get_local_ip():
@@ -39,16 +42,12 @@ query={"container_id":hostid}
 print("query====>",query)
 responseContainer=requests.get(apis["container"],json=query)
 print(responseContainer.json())
-
-
-while True:
-    
+while True:    
     responseContainer=requests.get(apis["container"],json=query)
     print(query,responseContainer.json())
     try:
         model_id=responseContainer.json()["data"][0]["model_id"]
-        query={"model_id":model_id}
-        
+        query={"model_id":model_id}        
         break
     except:
         time.sleep(5)
