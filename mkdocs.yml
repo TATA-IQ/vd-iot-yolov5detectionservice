@@ -1,8 +1,13 @@
 site_name: yolov5
 repo_url: https://github.com/./yolov5
 site_url: https://..github.io/yolov5
+<<<<<<< HEAD
 site_description: Repository for Yolov5 Detection Service
 site_author: TTataiQ
+=======
+site_description: yolov5 object detection service
+site_author: TataiQ
+>>>>>>> 344329da26341406c73f4574a93a7cc8a238c5be
 edit_uri: edit/main/docs/
 repo_name: ./yolov5
 copyright: Maintained by <a href="https://..com">Florian</a>.

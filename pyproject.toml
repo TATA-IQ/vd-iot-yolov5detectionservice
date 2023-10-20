@@ -1,8 +1,13 @@
 [tool.poetry]
 name = "yolov5"
 version = "0.0.1"
+<<<<<<< HEAD
 description = "Repository for Yolov5 Detection Service"
 authors = ["TTataiQ <faditya.singh@tataiq.com>"]
+=======
+description = "yolov5 object detection service"
+authors = ["TataiQ <fsridhar.bondla@tataiq.com>"]
+>>>>>>> 344329da26341406c73f4574a93a7cc8a238c5be
 repository = "https://github.com/./yolov5"
 documentation = "https://..github.io/yolov5/"
 readme = "README.md"
