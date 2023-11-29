@@ -136,7 +136,7 @@ class InferenceModel:
         )
         # print("predictions=====>", predictions)
         listresult = []
-        for i1, det in enumerate(predictions):
+        for i, det in enumerate(predictions):
             non_scaled_coords = det[:, :6].clone()
             print("non_scaled_coords===",non_scaled_coords)
             # print("det[:, :6]====>",det[:, :6])
@@ -145,7 +145,7 @@ class InferenceModel:
             # print("$"*100)
             print("======det===>",det)
             # print(type(det))
-            for j1,(x1, y1, x2, y2, conf, cls) in enumerate(reversed(det)):
+            for j,(x1, y1, x2, y2, conf, cls) in enumerate(reversed(det)):
                 listresult.append(
                     {
                         "class": int(cls.numpy()),
