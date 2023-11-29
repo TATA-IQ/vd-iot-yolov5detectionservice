@@ -136,7 +136,7 @@ class InferenceModel:
         )
         # print("predictions=====>", predictions)
         listresult = []
-        for i, det in enumerate(predictions):
+        for i1, det in enumerate(predictions):
             non_scaled_coords = det[:, :6].clone()
             print("non_scaled_coords===",non_scaled_coords)
             # print("det[:, :6]====>",det[:, :6])
@@ -145,111 +145,7 @@ class InferenceModel:
             # print("$"*100)
             print("======det===>",det)
             # print(type(det))
-            for j, (x1, y1, x2, y2, conf, cls) in enumerate(reversed(det)):
-                listresult.append(
-                    {
-                        "class": int(cls.numpy()),
-                        "id": None,
-                        "class_name": str(self.names[int(cls.numpy())]),
-                        "score": round(float(conf.numpy()), 3),
-                        "xmin": int(x1),
-                        "ymin": int(y1),
-                        "xmax": int(x2),
-                        "ymax": int(y2),
-                        "xmin_c": int(non_scaled_coords[j][0].item()),
-                        "ymin_c": int(non_scaled_coords[j][1].item()),
-                        "xmax_c": int(non_scaled_coords[j][2].item()),
-                        "ymax_c": int(non_scaled_coords[j][3].item()),
-                        
-                    }
-                )
-        return listresult
-    
-    def infer_v2(self, image, model_config=None):
-        """
-        This will do the detection on the image
-        Args:
-            image (array): image in numpy array
-            model_config (dict): configuration specific to camera group for detection
-        Returns:
-            list: list of dictionary. It will have all the detection result.
-        """
-        image_height, image_width, _ = image.shape
-        raw_image = copy.deepcopy(image)
-        img0 = copy.deepcopy(image)
-        img = letterbox(img0, 640, stride=32)[0]
-        img = img[:, :, ::-1].transpose(2, 0, 1)
-        img = np.ascontiguousarray(img)
-        img = torch.from_numpy(img).to(self.device)
-        img = img.half() if self.half else img.float()
-        img /= 255.0
-        # print("img===>", img)
-        if img.ndimension() == 3:
-            img = img.unsqueeze(0)
-        # print("model====>", self.model)
-        predictions = self.model(img, augment=self.augment)[0]
-        print("predictions=====>", predictions)
-        print("*"*100)
-        print(model_config)
-        if len(model_config)>0:
-            print("model config is not none")
-            self.object_confidence = model_config["conf_thres"]
-            self.iou_threshold = model_config["iou_thres"]
-            self.max_det = model_config["max_det"]
-            self.agnostic_nms = model_config["agnostic_nms"]
-            self.augment = model_config["augment"]
-            # self.classes=model_config["conf_thres"]
-        predictions = non_max_suppression(
-            predictions,
-            self.object_confidence,
-            self.iou_threshold,
-            self.classes,
-            self.agnostic_nms,
-            max_det=self.max_det,
-        )
-        # print("predictions=====>", predictions)
-        listresult = []
-        for i, det in enumerate(predictions):
-            non_scaled_coords = det[:, :6].clone()
-            print("non_scaled_coords===",non_scaled_coords)
-            # print("det[:, :6]====>",det[:, :6])
-            if len(det):
-                det[:, :4] = scale_coords(img.shape[2:], det[:, :4], image.shape).round()
-            # print("$"*100)
-            print("======det===>",det)
-            # print(type(det))
-            for j, (x1, y1, x2, y2, conf, cls) in enumerate(reversed(det)):
-                listresult.append(
-                    {
-                        "class": int(cls.numpy()),
-                        "id": None,
-                        "class_name": str(self.names[int(cls.numpy())]),
-                        "score": round(float(conf.numpy()), 3),
-                        "xmin": int(x1),
-                        "ymin": int(y1),
-                        "xmax": int(x2),
-                        "ymax": int(y2),
-                        "xmin_c": int(non_scaled_coords[j][0].item()),
-                        "ymin_c": int(non_scaled_coords[j][1].item()),
-                        "xmax_c": int(non_scaled_coords[j][2].item()),
-                        "ymax_c": int(non_scaled_coords[j][3].item()),
-                        
-                    }
-                )
-        return listresult
-    
-    def mark_res(self, res, origin_y, origin_x, H, W):
-        listresult = []
-        for i, det in enumerate(res):
-            non_scaled_coords = det[:, :6].clone()
-            print("non_scaled_coords===",non_scaled_coords)
-            # print("det[:, :6]====>",det[:, :6])
-            if len(det):
-                det[:, :4] = scale_coords(img.shape[2:], det[:, :4], image.shape).round()
-            # print("$"*100)
-            print("======det===>",det)
-            # print(type(det))
-            for j, (x1, y1, x2, y2, conf, cls) in enumerate(reversed(det)):
+            for j1,(x1, y1, x2, y2, conf, cls) in enumerate(reversed(det)):
                 listresult.append(
                     {
                         "class": int(cls.numpy()),
