@@ -16,3 +16,5 @@ class Image_Model(BaseModel):
     model_framework: Union[str, None] = None
     split_columns: Union[int, None] = None
     split_rows: Union[int, None] = None
+    
+    

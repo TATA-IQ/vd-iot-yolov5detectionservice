@@ -245,7 +245,7 @@ def detection(data: Image_Model):
         final_res['resultflag']="no"
 
     final_res['result']=res
-    return final_res
+    return {"data":final_res}
 
 
 @app.get("/classes")

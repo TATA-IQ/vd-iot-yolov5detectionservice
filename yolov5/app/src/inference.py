@@ -183,7 +183,7 @@ class InferenceModel:
                     #print(det_list[i][0])
                     #print(det_list[j][0])
                     cord =   [{'class': det_list[i][0]['class_id'],
-                               "id":None,
+                                "id":None,
                               'class_name': det_list[i][0]['class'],
                               'score': det_list[i][0]['score'],
                               'xmin': min(det_list[i][0]['xmin'], det_list[j][0]['xmin']),
@@ -213,7 +213,7 @@ class InferenceModel:
                 print(f"i:{i}, j:{j}")
                 sub_img = frame[i*sheight_row:(i+1)*sheight_row, j*swidth_col:(j+1)*swidth_col]                
                 # res=model.predict(sub_img)                
-                cv2.imwrite("/home/sridhar.bondla10/gitdev_v3/vd-iot-yolov5detectionservice/yolov5/test/"+str(i)+"_"+str(j)+".jpg",sub_img)
+                # cv2.imwrite("/home/sridhar.bondla10/gitdev_v3/vd-iot-yolov5detectionservice/yolov5/test/"+str(i)+"_"+str(j)+".jpg",sub_img)
 
                 image=copy.deepcopy(sub_img)
                 image_height, image_width, _ = image.shape

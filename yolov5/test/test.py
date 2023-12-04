@@ -12,6 +12,7 @@ import io
 url = "http://0.0.0.0:7000/detect/"
 
 img = cv2.imread("ppe_test_tcom.jpg")
+img = cv2.imread("2023_08_22_15_40_34_13.jpg")
 img_str = cv2.imencode(".jpg", img)[1].tobytes().decode("ISO-8859-1")
 
 stream = BytesIO(img_str.encode("ISO-8859-1"))
@@ -35,20 +36,20 @@ query = {
     
    },
     "split_columns": 2,
-    "split_rows": 1}
+    "split_rows": 2}
 
 
 r = requests.post(url, json=query)
 data = r.json()
 print(r.json())
 
-detections = r.json()['result']
+detections = r.json()['data']['result']
 print(len(detections))
 if len(detections)>0:
     for a,i in enumerate(detections):
         img1 = cv2.rectangle(img,(i['xmin'],i['ymin']),(i["xmax"],i["ymax"]),(255,255,0),2)
         cv2.putText(img, i["class_name"], (i['xmin'],i['ymin']), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,0,0), 1)
-    cv2.imwrite(str(i["class_name"])+"_"+str(a)+".jpg",img1)
+    cv2.imwrite("new_"+str(i["class_name"])+"_"+str(a)+".jpg",img1)
 else:
     print("no detections")
 
