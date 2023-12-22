@@ -25,6 +25,7 @@ Run pip install protobuf==3.20.*
 Run pip install ipython
 Run pip install psutil
 Run pip install minio
+Run pip install python-consul
 copy yolov5/ /app
 WORKDIR /app
 RUN mkdir /app/logs
