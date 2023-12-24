@@ -17,12 +17,16 @@ import numpy as np
 from PIL import Image
 from io import BytesIO
 
+from sourcelogs.logger import create_rotating_log
 from src.inference import InferenceModel
 from sftpdownload.download import SFTPClient
 from querymodel.imageModel import Image_Model
 from utils_download.model_download import DownloadModel
 from src.inference import InferenceModel
-
+from console_logging.console import Console
+console=Console()
+os.makedirs("logs", exist_ok=True)
+log = create_rotating_log("logs/logs.log")
 
 def get_local_ip():
         '''
@@ -84,10 +88,12 @@ def get_confdata(consul_conf):
         try:
             res=requests.get(endpoint_addr+"/")
             endpoints=res.json()
-            print("===got endpoints===",endpoints)
+            log.info(f"===got endpoints==={endpoints}")
+            console.info(f"===got endpoints==={endpoints}")
             break
         except Exception as ex:
-            print("endpoint exception==>",ex)
+            log.error(f"endpoint exception==>{ex}")
+            console.error(f"endpoint exception==>{ex}")
             time.sleep(10)
             continue
     
@@ -95,29 +101,33 @@ def get_confdata(consul_conf):
         try:
             res=requests.get(endpoint_addr+endpoints["endpoint"]["model"])
             modelconf=res.json()
-            print("modelconf===>",modelconf)
+            log.info(f"modelconf===>{modelconf}")
+            console.info(f"modelconf===>{modelconf}")
             break
             
 
         except Exception as ex:
-            print("modelconf exception==>",ex)
+            log.error(f"modelconf exception==>{ex}")
+            console.error(f"modelconf exception==>{ex}")
             time.sleep(10)
             continue
-    print("=======searching for dbapi====")
+    console.info("=======searching for dbapi====")
     while True:
         try:
-            print("=====consul search====")
+            log.info("=====consul search====")
+            console.info("=====consul search====")
             dbconf=get_service_address(consul_client,"dbapi",consul_conf["env"])
             # print("****",dbconf)
             dbhost=dbconf["ServiceAddress"]
             dbport=dbconf["ServicePort"]
             res=requests.get(endpoint_addr+endpoints["endpoint"]["dbapi"])
             dbres=res.json()
-            print("===got db conf===")
+            console.info(f"===got db conf==={ dbres}")
             print(dbres)
             break
         except Exception as ex:
-            print("db discovery exception===",ex)
+            log.error("db discovery exception==={0}".format(ex))
+            console.error("db discovery exception==={0}".format(ex))
             time.sleep(10)
             continue
     for i in dbres["apis"]:
@@ -126,8 +136,10 @@ def get_confdata(consul_conf):
 
     
     print("======dbres======")
-    print(dbres)
-    print(modelconf)
+    log.info(dbres)
+    log.info(modelconf)
+    console.info(dbres)
+    console.info(modelconf)
     return  dbres,modelconf
 
 class SetupModel():
@@ -135,14 +147,14 @@ class SetupModel():
     Class to Setup the Infernce Model
     '''
 
-    def __init__(self,config_path="config/config.yaml",model_config_path="config/model.yaml"):
+    def __init__(self,config_path="config/config.yaml",model_config_path="config/model.yaml",logger = log):
         config = Config.yamlconfig(config_path)
         dbapi,minio_conf=get_confdata(config[0]["consul"])
         self.modelconf=Config.yamlModel(model_config_path)[0]
         self.apis = dbapi["apis"]
         # self.sftp = conf["sftp"]
         self.minio=minio_conf["minio"]
-        
+        self.log = logger
         # conf = Config.yamlconfig(config_path)[0]
         # modelconf=Config.yamlModel(model_config_path)[0]
         # self.apis = conf["apis"]
@@ -192,8 +204,8 @@ class SetupModel():
             self.apis["model_master_config"], json={"model_id": self.modelconf["model_id"]}
         ).json()
         
-        print("====Model Master Response======")
-        print(modelmaster)
+        console.info(f"======Model Master Response======{modelmaster}")
+        self.log.info(f"======Model Master Response======{modelmaster}")
         return modelmaster['data']
         # model_path = responseModel.json()["data"][0]["model_path"]
         # time.sleep(10)
@@ -224,7 +236,7 @@ class SetupModel():
         '''
 
         local_path="model"
-        yolodownload = DownloadModel(modelmaster["model_framework"], self.minio)
+        yolodownload = DownloadModel(modelmaster["model_framework"], self.minio,logger = self.log)
         yolodownload.createLocalFolder(local_path)
         yolodownload.save_data(modelmaster["model_path"], local_path)
         # downloadData(data.model_path,local_path)
@@ -293,7 +305,7 @@ class SetupModel():
         return im,self.modelconf,model_name, framework
 
 
-st=SetupModel()    
+st=SetupModel(logger=log)    
 im,modelconf,model_name, framework=st.startModel()
 
 app = FastAPI()
@@ -322,9 +334,6 @@ def detection(data: Image_Model):
         dict: inferred result of the images
     '''
     image = strToImage(data.image)
-    print("**"*100)
-    print(data.model_config)
-    print("**"*100)
 
     final_res = {
         "image_name":data.image_name,
@@ -347,12 +356,14 @@ def detection(data: Image_Model):
         split_rows = 1
         
     if data.model_config is None:
-        res = im.infer_v3(image,split_columns,split_rows)
+        res = im.infer_v2(image,split_columns,split_rows)
     else:
-        res = im.infer_v3(image, data.model_config,split_columns,split_rows)
-    print("======inference done**********")
-    print(res)
-    print(type(res))
+        res = im.infer_v2(image, data.model_config,split_columns,split_rows)
+    console.info("======inference done**********")
+    log.info("======inference done**********")
+    log.info(res)
+    console.info(res)
+    log.info(type(res))
     if len(res)>0:
         final_res['resultflag']="yes"
     else:
@@ -372,7 +383,8 @@ def detection():
 
 
 if __name__ == "__main__":
-    print("=====inside main************")
+    console.info("=====inside main************")
+    log.info("=====inside main************")
     uvicorn.run(app, host="0.0.0.0", port=int(modelconf["port"]))
 
 

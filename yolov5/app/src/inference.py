@@ -14,12 +14,14 @@ import cv2
 import numpy as np
 import pandas as pd
 
+from console_logging.console import Console
+console=Console()
 
 class InferenceModel:
     """
     Yolov5 inference
     """
-    def __init__(self, model_path=None, gpu=False):
+    def __init__(self, model_path=None, gpu=False,logger=None):
         """
         Initialize Yolov5 inference
         
@@ -40,6 +42,7 @@ class InferenceModel:
         self.agnostic_nms = False
         self.max_det = 1000
         self.half = False
+        self.log = logger
 
     def initializeVariable(
         self,
@@ -76,7 +79,8 @@ class InferenceModel:
             # self.model_path = "/home/sridhar.bondla10/gitdev_v3/vd-iot-yolov5detectionservice/yolov5/app/DeployedModel/tata_com_ppe_02_03_2022.pt"
             self.model = attempt_load(self.model_path, device=self.device)
         else:
-            print("MODEL NOT FOUND")
+            self.log.error("MODEL NOT FOUND")
+            console.error("MODEL NOT FOUND")
             sys.exit()
         self.stride = int(self.model.stride.max())
         self.names = (
@@ -207,10 +211,12 @@ class InferenceModel:
         sheight_row =  int(frame.shape[0]/split_row)
         det_list = []
         h,w,_=frame.shape
-        print(f"split_col {split_col},split_row {split_row}")
+        self.log.info(f"===split_col,split_row=={split_col},{split_row}")
+        console.info(f"===split_col,split_row=={split_col},{split_row}")
         for i in range(0, split_row):
             for j in range(0, split_col):
-                print(f"i:{i}, j:{j}")
+                self.log.info(f"i:{i}, j:{j}")
+                console.info(f"i:{i}, j:{j}")
                 sub_img = frame[i*sheight_row:(i+1)*sheight_row, j*swidth_col:(j+1)*swidth_col]                
                 # res=model.predict(sub_img)                
                 # cv2.imwrite("/home/sridhar.bondla10/gitdev_v3/vd-iot-yolov5detectionservice/yolov5/test/"+str(i)+"_"+str(j)+".jpg",sub_img)
@@ -230,11 +236,12 @@ class InferenceModel:
                     img = img.unsqueeze(0)
                 # print("model====>", self.model)
                 predictions = self.model(img, augment=self.augment)[0]
-                print("predictions=====>", predictions)
-                print("*"*100)
-                print(self.model_config)
+                self.log.info(f"predictions=====>{predictions}")
+                console.info(f"predictions=====>{predictions}")
+                # print(self.model_config)
                 if len(self.model_config)>0:
-                    print("model config is not none")
+                    self.log.info("model config is not none")
+                    console.info("model config is not none")
                     self.object_confidence = self.model_config["conf_thres"]
                     self.iou_threshold = self.model_config["iou_thres"]
                     self.max_det = self.model_config["max_det"]
@@ -255,12 +262,13 @@ class InferenceModel:
                 listresult = []
                 for i1, det in enumerate(predictions):
                     non_scaled_coords = det[:, :6].clone()
-                    print("non_scaled_coords===",non_scaled_coords)
+                    # print("non_scaled_coords===",non_scaled_coords)
                     # print("det[:, :6]====>",det[:, :6])
                     if len(det):
                         det[:, :4] = scale_coords(img.shape[2:], det[:, :4], image.shape).round()
                     # print("$"*100)
-                    print("======det===>",det)
+                    self.log.info("======det===>{det}")
+                    console.info("======det===>{det}")
                     # print(type(det))
                     for j1, (x1, y1, x2, y2, conf, cls) in enumerate(reversed(det)):
                         
@@ -296,7 +304,7 @@ class InferenceModel:
     
     
 
-    def infer_v3(self, image, model_config=None, split_columns=1, split_rows=1):
+    def infer_v2(self, image, model_config=None, split_columns=1, split_rows=1):
         """
         This will do the detection on the image
         Args:
@@ -307,11 +315,12 @@ class InferenceModel:
         """
         # image_height, image_width, _ = image.shape
         print("image shape====",image.shape)
-        print(split_columns,split_rows)
+        self.log.info(f"image shape===={image.shape}")
+        console.info(f"image shape===={image.shape}")
         # raw_image = copy.deepcopy(image)
         # img0 = copy.deepcopy(image)
         img = copy.deepcopy(image)
-        print("model config====>", model_config)
+        # print("model config====>", model_config)
         
         self.model_config = model_config
         # if model_config is not None:
@@ -327,8 +336,10 @@ class InferenceModel:
         
         listresult = self.split(img, split_columns, split_rows, self.model)
         if len(listresult)==0:
-            print("no detections")
+            self.log.info("no detections")
+            console.info("no detections")
         else:
-            print(listresult)
+            self.log.info(f"listresult==={listresult}")
+            console.info(f"listresult==={listresult}")
         return listresult
         
