@@ -26,6 +26,7 @@ Run pip install ipython
 Run pip install psutil
 Run pip install minio
 Run pip install python-consul
+Run pip install console-logging
 copy yolov5/ /app
 WORKDIR /app
 RUN mkdir /app/logs
