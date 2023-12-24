@@ -9,7 +9,7 @@ from io import BytesIO
 import io
 
 
-url = "http://0.0.0.0:7000/detect/"
+url = "http://172.16.0.205:7000/detect/"
 
 img = cv2.imread("ppe_test_tcom.jpg")
 img = cv2.imread("2023_08_22_15_40_34_13.jpg")
