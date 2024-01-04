@@ -314,9 +314,9 @@ class InferenceModel:
         results (list):  list of dictionary. It will have all the detection result.
         """
         # image_height, image_width, _ = image.shape
-        print("image shape====",image.shape)
-        self.log.info(f"image shape===={image.shape}")
+        print("image shape====1",image.shape)
         console.info(f"image shape===={image.shape}")
+        self.log.info(f"image shape===={image.shape}")
         # raw_image = copy.deepcopy(image)
         # img0 = copy.deepcopy(image)
         img = copy.deepcopy(image)

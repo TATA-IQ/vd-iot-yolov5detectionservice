@@ -296,7 +296,7 @@ class SetupModel():
         else:
             gpu = False
         model_list = os.listdir("model/")
-        im = InferenceModel(model_path="model/" + model_list[0], gpu=gpu)
+        im = InferenceModel(model_path="model/" + model_list[0], gpu=gpu,logger = self.log)
         im.loadmodel()
         print("====Model Loaded====")
         print("Running api on GPU {}".format(gpu))

@@ -27,7 +27,7 @@ Run pip install psutil
 Run pip install minio
 Run pip install python-consul
 Run pip install console-logging
-copy yolov5/ /app
+copy yolov5/app /app
 WORKDIR /app
 RUN mkdir /app/logs
 cmd ["python3","app.py"]
